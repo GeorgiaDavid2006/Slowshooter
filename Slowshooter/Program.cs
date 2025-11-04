@@ -132,7 +132,7 @@ namespace Slowshooter
             Console.SetCursorPosition(3, 5);
             Console.ForegroundColor = playerColors[turn % 2];
 
-            Console.Write($"IT IS PLAYER {turn % 2 + 1}'S TURN! LETS GO!");
+            Console.Write($"PLAYER {turn % 2 + 1}'S TURN!");
 
 
             Console.ForegroundColor = ConsoleColor.DarkGray;
