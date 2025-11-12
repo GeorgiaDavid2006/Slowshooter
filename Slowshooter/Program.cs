@@ -52,11 +52,20 @@ namespace Slowshooter
         static int randXp2 = 0;
         static int randYp2 = 0;
 
+        static int healthXp1 = 0;
+        static int healthYp1 = 0;
+
+        static int healthXp2 = 0;
+        static int healthYp2 = 0;
+
         static Random xAxis = new Random();
         static Random yAxis = new Random();
 
         static int p1AmmoBoard = 0;
         static int p2AmmoBoard = 0;
+
+        static int p1HealthBoard = 0;
+        static int p2HealthBoard = 0;
 
         static bool p1Shoot = false;
         static bool p2Shoot = false;
@@ -167,7 +176,8 @@ namespace Slowshooter
 
             turn += 1;
 
-            
+            //Spawnn random area
+            //Ammo
             if (p1Ammo <= 1 && p1AmmoBoard == 0)
             {
                 randXp1 = xAxis.Next(1, 4);
@@ -181,7 +191,22 @@ namespace Slowshooter
                 randYp2 = yAxis.Next(1, 4);
             }
 
-            if(p1_x_pos == randXp1 && p1_y_pos == randYp1)
+            //Health
+            if (p1Health <= 5 && p1HealthBoard == 0)
+            {
+                healthXp1 = xAxis.Next(1, 4);
+                healthYp1 = yAxis.Next(1, 4);
+            }
+
+            if (p2Health <= 5 && p2HealthBoard == 0)
+            {
+                healthXp2 = xAxis.Next(9, 12);
+                healthYp2 = yAxis.Next(1, 4);
+            }
+
+            //Pick up
+            //ammo
+            if (p1_x_pos == randXp1 && p1_y_pos == randYp1)
             {
                 if (p1Ammo <= 1)
                 {
@@ -200,6 +225,26 @@ namespace Slowshooter
                 }
             }
 
+            //Health
+            if (p1_x_pos == healthXp1 && p1_y_pos == healthYp1)
+            {
+                if (p1Health <= 5)
+                {
+                    p1Health++;
+                    p1HealthBoard--;
+                }
+            }
+
+            if (p2_x_pos == healthXp2 && p2_y_pos == healthYp2)
+            {
+                if (p2Health <= 5)
+                {
+                    p2Health++;
+                    p2HealthBoard--;
+                }
+            }
+
+            //Shoot
             if (p1Shoot == true)
             {
                 if(p1_y_pos == p2_y_pos)
@@ -250,12 +295,9 @@ namespace Slowshooter
                     p1AmmoBoard++;
                 }
                 
-                
                     Console.SetCursorPosition(randXp1, randYp1);
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.Write("*");
-                
-                
             }
 
             if (p2Ammo <= 1)
@@ -267,9 +309,34 @@ namespace Slowshooter
                 Console.SetCursorPosition(randXp2, randYp2);
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("*");
-                
             }
 
+            //draw health pickups
+            if(p1Health < 5)
+            {
+                if(p1HealthBoard == 0)
+                {
+                    p1HealthBoard++;
+                }
+
+                Console.SetCursorPosition(healthXp1, healthYp1);
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.Write("+");
+                Console.ResetColor();
+            }
+
+            if (p2Health < 5)
+            {
+                if (p2HealthBoard == 0)
+                {
+                    p2HealthBoard++;
+                }
+
+                Console.SetCursorPosition(healthXp2, healthYp2);
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.Write("+");
+                Console.ResetColor();
+            }
 
             // draw the Turn Indicator
             Console.SetCursorPosition(3, 5);
