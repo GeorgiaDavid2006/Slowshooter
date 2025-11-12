@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 
 namespace Slowshooter
@@ -39,8 +40,33 @@ namespace Slowshooter
         // what turn is it? will be 0 after game is drawn the first time
         static int turn = -1;
 
+        // health
+        static int p1Health = 5;
+        static int p2Health = 5;
+
+        // Random
+
+        static int randXp1 = 0;
+        static int randYp1 = 0;
+
+        static int randXp2 = 0;
+        static int randYp2 = 0;
+
+        static Random xAxis = new Random();
+        static Random yAxis = new Random();
+
+        static int p1AmmoBoard = 0;
+        static int p2AmmoBoard = 0;
+
+        static bool p1Shoot = false;
+        static bool p2Shoot = false;
+
+        //ammo
+        static int p1Ammo = 0;
+        static int p2Ammo = 0;
+
         // contains the keys that player 1 and player 2 are allowed to press
-        static (char[], char[]) allKeybindings = (new char[]{ 'W', 'A', 'S', 'D' }, new char[]{ 'J', 'I', 'L', 'K' });
+        static (char[], char[]) allKeybindings = (new char[]{ 'W', 'A', 'S', 'D', ' ' }, new char[]{ 'J', 'I', 'L', 'K', ' ' });
         static ConsoleColor[] playerColors = { ConsoleColor.Red, ConsoleColor.Blue };
 
         static void Main(string[] args)
@@ -54,6 +80,25 @@ namespace Slowshooter
                 Draw();
                 
             }
+
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("GAME OVER");
+            Console.ForegroundColor = ConsoleColor.White;
+
+            if (p1Health > 0)
+            {
+                Console.ForegroundColor = playerColors[0];
+                Console.WriteLine("P1 HAS WON");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            else
+            {
+                Console.ForegroundColor = playerColors[1];
+                Console.WriteLine("P2 HAS WON");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+
         }
 
         static void ProcessInput()
@@ -91,6 +136,18 @@ namespace Slowshooter
             if (input == ConsoleKey.I) p2_y_input = -1;
             if (input == ConsoleKey.K) p2_y_input = 1;
 
+            if(input == ConsoleKey.Spacebar )
+            {
+                if(turn % 2 == 0 && p1Ammo > 0)
+                {
+                    p1Shoot = true;
+                }
+                else if(turn % 2 != 0 && p2Ammo > 0)
+                {
+                    p2Shoot = true;
+                }
+            }
+
         }
 
         static void Update()
@@ -110,6 +167,63 @@ namespace Slowshooter
 
             turn += 1;
 
+            
+            if (p1Ammo <= 1 && p1AmmoBoard == 0)
+            {
+                randXp1 = xAxis.Next(1, 4);
+                randYp1 = yAxis.Next(1, 4);
+
+            }
+
+            if (p2Ammo <= 1 && p2AmmoBoard == 0)
+            {
+                randXp2 = xAxis.Next(9, 12);
+                randYp2 = yAxis.Next(1, 4);
+            }
+
+            if(p1_x_pos == randXp1 && p1_y_pos == randYp1)
+            {
+                if (p1Ammo <= 1)
+                {
+                    p1Ammo++;
+                    p1AmmoBoard--;
+                }
+                
+            }
+
+            if (p2_x_pos == randXp2 && p2_y_pos == randYp2)
+            {
+                if(p2Ammo <= 1)
+                {
+                    p2Ammo++;
+                    p2AmmoBoard--;
+                }
+            }
+
+            if (p1Shoot == true)
+            {
+                if(p1_y_pos == p2_y_pos)
+                {
+                    p2Health--;
+                }
+                
+                p1Ammo--;
+                p1Shoot = false;
+            }
+            if(p2Shoot == true)
+            {
+                if (p1_y_pos == p2_y_pos)
+                {
+                    p1Health--;
+                }
+                p2Ammo--;
+                p2Shoot = false;
+            }
+
+            if (p1Health == 0 || p2Health == 0)
+            {
+                isPlaying = false;
+            }
         }
 
         static void Draw()
@@ -128,6 +242,35 @@ namespace Slowshooter
             Console.ForegroundColor = playerColors[1];
             Console.Write("O");
 
+            //draw Ammo 
+            if (p1Ammo <= 1)
+            {
+                if(p1AmmoBoard == 0)
+                {
+                    p1AmmoBoard++;
+                }
+                
+                
+                    Console.SetCursorPosition(randXp1, randYp1);
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write("*");
+                
+                
+            }
+
+            if (p2Ammo <= 1)
+            {
+                if(p2AmmoBoard == 0)
+                {
+                    p2AmmoBoard++;
+                }
+                Console.SetCursorPosition(randXp2, randYp2);
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write("*");
+                
+            }
+
+
             // draw the Turn Indicator
             Console.SetCursorPosition(3, 5);
             Console.ForegroundColor = playerColors[turn % 2];
@@ -138,6 +281,18 @@ namespace Slowshooter
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine("\nUSE WASD or IJKL to move");
             Console.ForegroundColor = ConsoleColor.White;
+
+            // display player health
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Player1 Health: " + p1Health);
+            Console.WriteLine("Player1 Ammo: " + p1Ammo);
+
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("Player2 Health: " + p2Health);
+            Console.WriteLine("Player2 Ammo: " + p2Ammo);
+
+            Console.ForegroundColor = ConsoleColor.White;
         }
+
     }
 }
